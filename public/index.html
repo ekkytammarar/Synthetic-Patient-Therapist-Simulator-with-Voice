@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>GazeTalk — Aphasia Rehabilitation Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#07090f;color:#e2e8f0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px}
+.wrap{max-width:680px;width:100%;text-align:center}
+.logo{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,#2563eb,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;margin:0 auto 24px;font-family:'Syne',sans-serif}
+h1{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;letter-spacing:-.03em;background:linear-gradient(135deg,#3b82f6,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.sub{font-size:15px;color:#64748b;margin-bottom:48px;line-height:1.6}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:40px}
+.card{background:#0e1118;border:1px solid #1e2535;border-radius:14px;padding:28px 24px;text-align:left;text-decoration:none;color:inherit;transition:all .2s;display:block}
+.card:hover{border-color:#3b82f6;transform:translateY(-2px)}
+.card-icon{font-size:28px;margin-bottom:14px}
+.card-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:6px}
+.card-desc{font-size:13px;color:#64748b;line-height:1.6}
+.card-tag{display:inline-block;margin-top:12px;font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;font-family:'DM Mono',monospace;letter-spacing:.05em;background:#1e3a5f;color:#60a5fa}
+.footer{font-size:11px;color:#334155;font-family:'DM Mono',monospace;line-height:1.8}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">G</div>
+  <h1>GazeTalk Platform</h1>
+  <p class="sub">Aphasia rehabilitation tools — Denmark pilot<br>Aphasia rehabilitation research project · DTU, 2025</p>
+
+  <div class="cards">
+    <a class="card" href="/trainer.html">
+      <div class="card-icon">💬</div>
+      <div class="card-title">Conversation Trainer</div>
+      <div class="card-desc">AI-powered aphasia rehabilitation conversation with CON_BROW and COMPOSE modes and live clinical metrics.</div>
+      <span class="card-tag">CON_BROW · COMPOSE</span>
+    </a>
+    <a class="card" href="/simulator.html">
+      <div class="card-icon">🧠</div>
+      <div class="card-title">Synthetic Patient Simulator</div>
+      <div class="card-desc">Persona-conditioned synthetic patient sessions with click timing, fatigue modelling, and TTR/CIU/LIX metrics.</div>
+      <span class="card-tag">PERSONA · FATIGUE MODEL</span>
+    </a>
+  </div>
+
+  <div class="footer">
+    GazeTalk Research Group · DTU Technology, Management and Economics<br>
+    Powered by Claude claude-sonnet-4-5 · For research and demonstration purposes
+  </div>
+</div>
+</body>
+</html>

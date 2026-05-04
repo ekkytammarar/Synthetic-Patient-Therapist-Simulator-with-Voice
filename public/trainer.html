@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GazeTalk Trainer</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: #0d0f12;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 680px;
+      width: 100%;
+      max-width: 520px;
+      background: #0d0f12;
+      color: #e8eaf0;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid #1e2128;
+    }
+    #header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid #1e2128;
+      background: #10131a;
+      flex-shrink: 0;
+    }
+    .logo {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #2563eb, #0ea5e9);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; color: #fff;
+    }
+    .hbtns { display: flex; gap: 8px; align-items: center; }
+    #modeBtn {
+      font-size: 11px; font-weight: 700; padding: 4px 10px;
+      border-radius: 6px; border: none; cursor: pointer;
+      background: #1d4ed8; color: #93c5fd; letter-spacing: .04em;
+    }
+    .gbtn {
+      font-size: 11px; padding: 4px 10px; border-radius: 6px;
+      border: 1px solid #2a2d38; background: transparent; color: #9ca3af; cursor: pointer;
+    }
+    .rbtn {
+      font-size: 11px; padding: 4px 10px; border-radius: 6px;
+      border: 1px solid #2a2d38; background: transparent; color: #f87171; cursor: pointer;
+    }
+    #configPanel {
+      padding: 14px 18px;
+      background: #10131a;
+      border-bottom: 1px solid #1e2128;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    #configPanel.open { display: flex; }
+    .crow { display: flex; align-items: center; gap: 10px; }
+    .clabel { font-size: 12px; color: #6b7280; min-width: 130px; }
+    .cinput {
+      flex: 1; font-size: 13px; padding: 5px 9px;
+      border-radius: 6px; border: 1px solid #2a2d38;
+      background: #0d0f12; color: #e8eaf0; font-family: inherit;
+    }
+    .savebtn {
+      align-self: flex-end; font-size: 12px; padding: 6px 14px;
+      border-radius: 6px; border: none; cursor: pointer;
+      background: #1d4ed8; color: #bfdbfe; font-weight: 600;
+    }
+    #metrics {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 1px; background: #1e2128; flex-shrink: 0;
+    }
+    .metric { padding: 10px 4px; text-align: center; background: #10131a; }
+    .mlabel { font-size: 10px; color: #4b5563; letter-spacing: .05em; text-transform: uppercase; }
+    .mvalue { font-size: 18px; font-weight: 600; margin-top: 2px; color: #e8eaf0; font-family: 'DM Mono', monospace; }
+    .mvalue.sm { font-size: 12px; }
+    .mvalue.warn { color: #f87171; }
+    .mvalue.good { color: #34d399; }
+    #circumAlert {
+      display: none;
+      margin: 8px 16px 0;
+      font-size: 12px; padding: 8px 12px;
+      border-radius: 8px; background: #451a03; color: #fbbf24;
+      border: 1px solid #78350f; flex-shrink: 0;
+    }
+    #chat {
+      flex: 1; overflow-y: auto; padding: 16px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .msg { display: flex; flex-direction: column; gap: 3px; max-width: 82%; }
+    .msg.user { align-self: flex-end; align-items: flex-end; }
+    .msg.ai   { align-self: flex-start; align-items: flex-start; }
+    .msender  { font-size: 10px; color: #4b5563; letter-spacing: .04em; }
+    .mbubble  { padding: 10px 14px; font-size: 14px; line-height: 1.6; word-break: break-word; }
+    .msg.user .mbubble {
+      background: #1d4ed8; color: #bfdbfe;
+      border-radius: 14px 14px 4px 14px;
+    }
+    .msg.ai .mbubble {
+      background: #1a1e28; color: #d1d5db;
+      border: 1px solid #1e2128;
+      border-radius: 14px 14px 14px 4px;
+      white-space: pre-wrap;
+    }
+    .dots { display: flex; gap: 5px; align-items: center; padding: 3px 0; }
+    .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #6b7280; animation: gtpulse 1.2s infinite; display: inline-block;
+    }
+    .dot:nth-child(2) { animation-delay: .15s; }
+    .dot:nth-child(3) { animation-delay: .3s; }
+    @keyframes gtpulse {
+      0%,100% { opacity: .3; transform: scale(.8); }
+      50%      { opacity: 1;  transform: scale(1); }
+    }
+    #inputArea {
+      display: flex; gap: 10px; padding: 12px 16px;
+      border-top: 1px solid #1e2128; background: #10131a;
+      align-items: flex-end; flex-shrink: 0;
+    }
+    #msgInput {
+      flex: 1; resize: none; padding: 10px 14px;
+      border-radius: 10px; border: 1px solid #2a2d38;
+      background: #0d0f12; color: #e8eaf0;
+      font-size: 14px; font-family: inherit; line-height: 1.5;
+      outline: none; min-height: 42px; max-height: 100px;
+    }
+    #sendBtn {
+      padding: 10px 18px; border-radius: 10px; border: none;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      background: #1d4ed8; color: #bfdbfe; transition: all .15s; white-space: nowrap;
+    }
+    #sendBtn:disabled { background: #1e2128; color: #4b5563; cursor: not-allowed; }
+    #chat::-webkit-scrollbar { width: 4px; }
+    #chat::-webkit-scrollbar-thumb { background: #2a2d38; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <div id="header">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="logo">G</div>
+      <div>
+        <div style="font-size:14px;font-weight:600;color:#e8eaf0;letter-spacing:-.02em">GazeTalk Trainer</div>
+        <div style="font-size:11px;color:#6b7280">Aphasia Rehabilitation · Denmark Pilot</div>
+      </div>
+    </div>
+    <div class="hbtns">
+      <button id="modeBtn" onclick="toggleMode()">CON_BROW</button>
+      <button class="gbtn" onclick="toggleConfig()">⚙ Settings</button>
+      <button class="rbtn" onclick="resetSession()">Reset</button>
+    </div>
+  </div>
+
+  <div id="configPanel">
+    <div class="crow">
+      <span class="clabel">Patient alias</span>
+      <input class="cinput" id="cfgAlias" value="Henrik">
+    </div>
+    <div class="crow">
+      <span class="clabel">Interests (comma)</span>
+      <input class="cinput" id="cfgInterests" value="Manchester United, jazz, cooking">
+    </div>
+    <div class="crow">
+      <span class="clabel">Min words / turn</span>
+      <input class="cinput" id="cfgMinWords" type="number" value="4" style="max-width:80px">
+    </div>
+    <div class="crow">
+      <span class="clabel">Max response length</span>
+      <input class="cinput" id="cfgMaxLen" type="number" value="120" style="max-width:80px">
+    </div>
+    <button class="savebtn" onclick="saveConfig()">Save &amp; Restart</button>
+  </div>
+
+  <div id="metrics">
+    <div class="metric"><div class="mlabel">Turns</div><div class="mvalue" id="mTurns">—</div></div>
+    <div class="metric"><div class="mlabel">Avg words</div><div class="mvalue" id="mAvg">—</div></div>
+    <div class="metric"><div class="mlabel">CIU</div><div class="mvalue" id="mCIU">—</div></div>
+    <div class="metric"><div class="mlabel">Mode</div><div class="mvalue sm" id="mMode">CON_BROW</div></div>
+  </div>
+
+  <div id="circumAlert">
+    ⚠ Circumlocution detected — patient may be describing a word they cannot recall.
+  </div>
+
+  <div id="chat"></div>
+
+  <div id="inputArea">
+    <textarea id="msgInput" rows="1"
+      placeholder="Type patient message… (Enter to send)"
+      onkeydown="handleKey(event)"
+      oninput="autoResize(this)"></textarea>
+    <button id="sendBtn" onclick="send()">Send</button>
+  </div>
+</div>
+
+<script>
+const API = "/chat";
+
+const CIRCUM = [
+  "the thing you","the thing that","what do you call it",
+  "i can't remember the word","i forgot the word","what's it called",
+  "can't remember the name","it's used for","you use it to",
+  "the place where","the person who","kind of like a",
+  "similar to a","it looks like"
+];
+
+let mode = "CON_BROW";
+let history = [];
+let turns=0, totalWords=0, ciuSum=0, ciuCount=0;
+let busy = false;
+
+function cfg(){
+  return {
+    alias:     document.getElementById("cfgAlias").value     || "Henrik",
+    interests: document.getElementById("cfgInterests").value || "Manchester United, jazz, cooking",
+    minWords:  parseInt(document.getElementById("cfgMinWords").value) || 4,
+    maxLen:    parseInt(document.getElementById("cfgMaxLen").value)   || 120,
+  };
+}
+
+function buildPrompt(){
+  const c = cfg();
+  const mb = mode === "CON_BROW"
+    ? `MODE: CON_BROW — Conversational browsing.
+- Warm English dialogue about patient interests
+- Start with 1-2 short clarifying questions before answering
+- Keep responses max ${c.maxLen} words
+- Ask 1-2 follow-up questions per turn to draw out more words
+- If input below GOAL_MIN_WORDS scaffold: "Try: who + what + why, at least ${c.minWords} words"
+- Celebrate small wins warmly. Never clinical.
+- CIRCUMLOCUTION: detect paraphrases like "the thing you use to cut bread", offer target word ("Do you mean knife?"), use naturally in next sentence.`
+    : `MODE: COMPOSE — Written message construction.
+- Output ALWAYS IN DANISH.
+- Produce exactly TWO variants:
+  1. Pre-aphasia style (warm, personal — draw on SEED_INTERESTS and alias)
+  2. Casual-formal style (clear, courteous, neutral)
+- End with: "Copy or edit. Say 'back' to return to CON_BROW."`;
+
+  return `You are GT_KA_Test, a conversational assistant for aphasia rehabilitation (GazeTalk, Denmark pilot).
+
+PATIENT ALIAS: ${c.alias}
+SEED_INTERESTS: ${c.interests}
+GOAL_MIN_WORDS: ${c.minWords}
+RESPONSE_MAX_LENGTH: ${c.maxLen} words
+LANG: English (CON_BROW) / Danish (COMPOSE only)
+FORBIDDEN_TOPICS: medical advice, diagnosis, prognosis, medication, speech-therapy techniques
+ALIAS_MAP: starts empty — learn shorthands (e.g. "mu" = Manchester United)
+
+${mb}
+
+INTERACTION PRINCIPLES:
+- Short, warm, concrete. One clear next step per turn.
+- Clarify before explaining. Minimal expert voice.
+- FORBIDDEN_TOPICS: "I can't advise on that — please speak with your therapist."
+
+CIRCUMLOCUTION PROTOCOL:
+1. Detect paraphrases or retrieval signals ("what's it called", "I forgot the word")
+2. Offer recast: "Do you mean [word]?"
+3. On confirmation use word naturally in next sentence
+4. Ask follow-up to reinforce word
+
+End every turn with fenced JSON block:
+\`\`\`json
+{"mode":"${mode}","metrics":{"total_words":0,"user_input":"","ttr_score":0,"cwr_proxy":0,"lix_estimate_user":0,"ciu_proxy":0},"dialog":{"assistant_followup_question":""},"learning":{"aliases_updates":[],"interests":[]},"forbidden_events":[]}
+\`\`\`
+
+TONE: Warm, concise, non-judgmental. Celebrate small wins. Avoid complex syntax.
+Obey all rules above before producing any answer.`;
+}
+
+function extractMetrics(raw){
+  let ciu = null;
+  const m = raw.match(/```json\s*([\s\S]*?)\s*```/);
+  if(m){ try{ ciu = JSON.parse(m[1]).metrics?.ciu_proxy ?? null; }catch{} }
+  const clean = raw.replace(/```json[\s\S]*?```/g,"").replace(/<!--.*?-->/gs,"").trim();
+  return { clean, ciu };
+}
+
+function wc(t){ return t.trim().split(/\s+/).filter(Boolean).length; }
+function isCircum(t){ return CIRCUM.some(p => t.toLowerCase().includes(p)); }
+
+function addMsg(role, text){
+  const chat = document.getElementById("chat");
+  const c = cfg();
+  const div = document.createElement("div");
+  div.className = "msg " + role;
+  const s = document.createElement("div");
+  s.className = "msender";
+  s.textContent = role === "user" ? c.alias : "AI Therapist";
+  const b = document.createElement("div");
+  b.className = "mbubble";
+  if(text === null){
+    b.innerHTML = '<div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+  } else {
+    b.textContent = text;
+  }
+  div.appendChild(s);
+  div.appendChild(b);
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return b;
+}
+
+function updateMetrics(){
+  const c = cfg();
+  const avg = turns > 0 ? (totalWords/turns).toFixed(1) : null;
+  const ciu = ciuCount > 0 ? Math.round(ciuSum/ciuCount) : null;
+  document.getElementById("mTurns").textContent = turns || "—";
+  const ae = document.getElementById("mAvg");
+  ae.textContent = avg || "—";
+  ae.className = "mvalue" + (avg && parseFloat(avg) < c.minWords ? " warn" : "");
+  const ce = document.getElementById("mCIU");
+  ce.textContent = ciu !== null ? ciu + "%" : "—";
+  ce.className = "mvalue" + (ciu !== null && ciu >= 60 ? " good" : ciu !== null ? " warn" : "");
+}
+
+async function send(){
+  if(busy) return;
+  const inp = document.getElementById("msgInput");
+  const text = inp.value.trim();
+  if(!text) return;
+  inp.value = ""; inp.style.height = "auto";
+  turns++; totalWords += wc(text);
+  updateMetrics();
+  document.getElementById("circumAlert").style.display = isCircum(text) ? "block" : "none";
+  addMsg("user", text);
+  const bubble = addMsg("ai", null);
+  history.push({ role:"user", content:text });
+  busy = true;
+  document.getElementById("sendBtn").disabled = true;
+  try {
+    const res = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-5",
+        max_tokens: 1000,
+        system: buildPrompt(),
+        messages: history
+      })
+    });
+    const data = await res.json();
+    const raw = data.content?.[0]?.text || "Error: no response received.";
+    const { clean, ciu } = extractMetrics(raw);
+    bubble.textContent = clean;
+    history.push({ role:"assistant", content:raw });
+    if(ciu !== null){ ciuSum += ciu; ciuCount++; updateMetrics(); }
+  } catch(e) {
+    bubble.textContent = "Connection failed. Is the server running? Check your terminal.";
+  }
+  busy = false;
+  document.getElementById("sendBtn").disabled = false;
+  document.getElementById("chat").scrollTop = 9999;
+}
+
+function toggleMode(){
+  mode = mode === "CON_BROW" ? "COMPOSE" : "CON_BROW";
+  const btn = document.getElementById("modeBtn");
+  btn.textContent = mode;
+  btn.style.background = mode === "CON_BROW" ? "#1d4ed8" : "#065f46";
+  btn.style.color      = mode === "CON_BROW" ? "#93c5fd" : "#6ee7b7";
+  document.getElementById("mMode").textContent = mode;
+}
+
+function toggleConfig(){
+  document.getElementById("configPanel").classList.toggle("open");
+}
+
+function saveConfig(){
+  document.getElementById("configPanel").classList.remove("open");
+  resetSession();
+}
+
+function handleKey(e){
+  if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); send(); }
+}
+
+function autoResize(el){
+  el.style.height = "auto";
+  el.style.height = Math.min(el.scrollHeight, 100) + "px";
+}
+
+function resetSession(){
+  history=[]; turns=0; totalWords=0; ciuSum=0; ciuCount=0;
+  document.getElementById("chat").innerHTML = "";
+  updateMetrics();
+  document.getElementById("circumAlert").style.display = "none";
+  const alias = cfg().alias;
+  const welcome = `Hello! Welcome to today's training session. How are you doing today, ${alias}?`;
+  addMsg("ai", welcome);
+  history.push({ role:"assistant", content:welcome });
+}
+
+resetSession();
+</script>
+</body>
+</html>
